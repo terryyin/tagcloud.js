@@ -1,15 +1,13 @@
 <html>
     <head>
+        <script type="text/javascript" src="tagcloud.js"></script> 
         <script type="application/javascript">
             function draw() {
                 var canvas = document.getElementById("canvas");
                 if (canvas.getContext) {
                     var ctx = canvas.getContext("2d");
-                    ctx.fillStyle = "rgb(200,0,0)";
-                    ctx.fillRect (10, 10, 55, 50);
-                    ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
-                    ctx.fillRect (30, 30, 55, 50);
-                    ctx.fillText("Sample String", 10, 50);
+                    var tagCloud = new TagCloud(ctx);
+                    tagCloud.render([["One",1]]);
                     var imgd = ctx.getImageData(5, 5, 120, 120);
                     var pix = imgd.data;
 
@@ -21,7 +19,7 @@
                                 // i+3 is alpha (the fourth element)
                     }
 
-                         ctx.putImageData(imgd, 5, 5);
+                    //     ctx.putImageData(imgd, 5, 5);
                 
                 }
             }
