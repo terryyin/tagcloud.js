@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <script type="application/javascript">
+            function draw() {
+                var canvas = document.getElementById("canvas");
+                if (canvas.getContext) {
+                    var ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "rgb(200,0,0)";
+                    ctx.fillRect (10, 10, 55, 50);
+                    ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
+                    ctx.fillRect (30, 30, 55, 50);
+                    ctx.fillText("Sample String", 10, 50);
+                    var imgd = ctx.getImageData(5, 5, 120, 120);
+                    var pix = imgd.data;
+
+                    // Loop over each pixel and invert the color.
+                    for (var i = 0, n = pix.length; i < n; i += 4) {
+                          pix[i  ] = 255 - pix[i  ]; // red
+                            pix[i+1] = 255 - pix[i+1]; // green
+                              pix[i+2] = 255 - pix[i+2]; // blue
+                                // i+3 is alpha (the fourth element)
+                    }
+
+                         ctx.putImageData(imgd, 5, 5);
+                
+                }
+            }
+        </script>
+    </head>
+    <body onload="draw();">
+        <canvas id="canvas" width="150" height="150"></canvas>
+    </body>
+</html>
