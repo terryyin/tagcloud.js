@@ -10,6 +10,10 @@ TagCloud.prototype.render = function(tags) {
     ctx.font = "" + fontSize + "pt Arial";
     ctx.textBaseline = "top";
     ctx.fillStyle = "rgb(0,0,0)";
-    ctx.fillText(tags[0][0], 0, 0);
-}
+    var lineHeight=ctx.measureText('M').width;
+    var matrics = ctx.measureText(tags[0][0]);
+    var x = (width - matrics.width) * Math.random();
+    var y = (height - lineHeight) * Math.random();
 
+    ctx.fillText(tags[0][0], x, y);
+}

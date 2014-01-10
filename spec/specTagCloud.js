@@ -51,10 +51,15 @@ describe("TagCloud", function() {
 
     it("should write the tag at a random place when only 1 tag", function() {
         spyOn(ctx, 'fillText').returnValue = 3;
-        //spyOn(tagCloud, 'randomX');
+        spyOn(Math, 'random').and.returnValue(0);
         tagCloud.render([['Only', 1]]);
-        expect(ctx.fillText).toHaveBeenCalledWith('Only', jasmine.any(Number), jasmine.any(Number));
+        expect(ctx.fillText).toHaveBeenCalledWith('Only', 0, jasmine.any(Number));
     });
 
+    it("should find another location when the selected location doesn't fit in the canvas.", function() {
+        spyOn(Math, 'random').and.returnValue(1);
+        tagCloud.render([['Only', 1]]);
+        expect(ctx).toBeFilledOverPercent(3);
+    });
 });
 
