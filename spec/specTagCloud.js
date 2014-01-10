@@ -50,7 +50,7 @@ describe("TagCloud", function() {
     });
 
     it("should write the tag at a random place when only 1 tag", function() {
-        spyOn(ctx, 'fillText').returnValue = 3;
+        spyOn(ctx, 'fillText');
         spyOn(Math, 'random').and.returnValue(0);
         tagCloud.render([['Only', 1]]);
         expect(ctx.fillText).toHaveBeenCalledWith('Only', 0, jasmine.any(Number));
@@ -60,6 +60,22 @@ describe("TagCloud", function() {
         spyOn(Math, 'random').and.returnValue(1);
         tagCloud.render([['Only', 1]]);
         expect(ctx).toBeFilledOverPercent(3);
+    });
+
+    it("should not draw on painted area", function() {
+        spyOn(ctx, 'fillText').and.callThrough();
+        ctx.fillStyle = "rgb(0,0,0);"
+        ctx.fillRect(0, 0, 20, height);
+        spyOn(Math, 'random').and.returnValue(0);
+        tagCloud.render([['Only', 1]]);
+        expect(ctx.fillText.calls.mostRecent().args[1]).toBeGreaterThan(20);
+    });
+
+    it("should draw text when 2 tags", function() {
+        spyOn(ctx, 'fillText').and.callThrough();
+        tagCloud.render([['One', 1], ['Two', 1]]);
+        expect(ctx.fillText).toHaveBeenCalledWith('One', jasmine.any(Number), jasmine.any(Number));
+        expect(ctx.fillText).toHaveBeenCalledWith('Two', jasmine.any(Number), jasmine.any(Number));
     });
 });
 

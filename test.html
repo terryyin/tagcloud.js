@@ -8,7 +8,7 @@
                     var ctx = canvas.getContext("2d");
                     ctx.strokeRect(0, 0, 150, 150);
                     var tagCloud = new TagCloud(150, 150, ctx);
-                    tagCloud.render([["One",1]]);
+                    tagCloud.render([["One",100], ["Tow", 80], ["Three", 50], ["Four", 3]]);
                     var imgd = ctx.getImageData(5, 5, 120, 120);
                     var pix = imgd.data;
 
