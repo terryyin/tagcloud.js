@@ -28,7 +28,8 @@ TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function(fontSize, tag)
 
     var base = new BasePlacement(
         (canvasWidth - matrics.width) * Math.random(),
-        (canvasHeight - lineHeight) * Math.random()
+        (canvasHeight - lineHeight) * Math.random(),
+        lineHeight
         );
 
     var placement;
@@ -53,25 +54,27 @@ TagCloud.prototype._isPlaceEmpty = function(placement, width, height) {
     return true;
 };
 
-function BasePlacement(x, y) {
+function BasePlacement(x, y, h) {
     var baseX = x,
         baseY = y,
+        scale = h,
         tryNumber = 0;
 
     this.nextPlaceToTry = function() {
         if (tryNumber < this._spiralOffsets.length)
             return {
-                x : baseX + this._spiralOffsets[tryNumber][0],
-                y : baseY + this._spiralOffsets[tryNumber++][1]
+                x : baseX + this._spiralOffsets[tryNumber][0] * scale,
+                y : baseY + this._spiralOffsets[tryNumber++][1] * scale
             };
     };
 }
 
-BasePlacement.prototype._spiralOffsets = [
-    [0, 0],
-    [10, 0],
-    [-35, 0],
-    [280, 0]
-];
+function generateSpiralOffsets() {
+    var spiralOffsets = [[0, 0]];
+
+    return spiralOffsets;
+}
+
+BasePlacement.prototype._spiralOffsets = generateSpiralOffsets();
 
 
