@@ -6,9 +6,10 @@
                 var canvas = document.getElementById("canvas");
                 if (canvas.getContext) {
                     var ctx = canvas.getContext("2d");
-                    ctx.strokeRect(0, 0, 150, 150);
+                    //ctx.strokeRect(0, 0, 150, 150);
                     var tagCloud = new TagCloud(150, 150, ctx);
-                    tagCloud.render([["One",100], ["Tow", 80], ["Three", 50], ["Four", 3]]);
+                    tagCloud.render([["One",100], ["TWO", 80], ["Three", 50], ["Four", 33],
+                            ["five", 30],["six", 29],["seven", 28],["eight", 27],["nine", 26],["ten", 25],["eleven", 24],["twelve", 23],["thirteen", 20],["fourteen", 15],["fifteen", 14],["sixteen", 13],["seventeen", 11],["eighteen", 8],["nineteen",5 ]]);
                     var imgd = ctx.getImageData(5, 5, 120, 120);
                     var pix = imgd.data;
 
