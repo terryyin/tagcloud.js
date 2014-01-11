@@ -14,6 +14,8 @@ describe("TagCloud", function() {
         document.body.appendChild(container);
         ctx = container.getContext("2d");
         tagCloud = new TagCloud(canvasWidth, canvasHeight, ctx);
+
+        ctx.fillStyle = "rgb(0,0,0);"
     });
 
     beforeEach(function () {
@@ -95,9 +97,8 @@ describe("TagCloud", function() {
         expect(ctx).toBeFilledOverPercent(3);
     });
 
-    it("should not draw on painted area on left", function() {
+    it("should not draw on painted area", function() {
         var leftFillPixes = canvasWidth/2;
-        ctx.fillStyle = "rgb(0,0,0);"
         ctx.fillRect(0, 0, leftFillPixes, canvasHeight);
         spyOn(ctx, 'fillText').and.callThrough();
         spyOn(Math, 'random').and.returnValue(0);
@@ -108,13 +109,12 @@ describe("TagCloud", function() {
 
     it("should use smaller font when no enough space", function() {
         var leftFillPixes = canvasWidth - 30;
-        ctx.fillStyle = "rgb(0,0,0);"
         ctx.fillRect(1, 1, leftFillPixes, canvasHeight-2);
         tagCloud.render([['Only', 1]]);
         expect(ctx).toHaveNoPixOnBorder();
     });
 
-    it("should draw text when 2 tags", function() {
+    it("should draw texts when 2 tags", function() {
         spyOn(ctx, 'fillText').and.callThrough();
         tagCloud.render([['One', 1], ['Two', 1]]);
         expect(ctx.fillText).toHaveBeenCalledWith('One', jasmine.any(Number), jasmine.any(Number));

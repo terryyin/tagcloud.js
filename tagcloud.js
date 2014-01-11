@@ -2,6 +2,7 @@ function TagCloud(w, h, context) {
     ctx = context;
     canvasWidth = w;
     canvasHeight = h;
+    fontSize = canvasHeight / 4;
 }
 
 TagCloud.prototype.render = function(tags) {
@@ -12,7 +13,6 @@ TagCloud.prototype.render = function(tags) {
 };
 
 TagCloud.prototype._placeTag = function(tag) {
-    var fontSize = canvasHeight / 4;
     var placement;
     while (!(placement = this._getNonOverlappingPlaceWithBestSize(fontSize, tag)))
         fontSize *= 0.9;
@@ -71,7 +71,15 @@ function BasePlacement(x, y, h) {
 
 function generateSpiralOffsets() {
     var spiralOffsets = [[0, 0]];
-
+    var radius = 0.8;
+    var dr = 0.5;
+    for (var i = 0; i < 15; i+=0.2) {
+        spiralOffsets.push([
+                   radius * Math.sin(i),
+                   radius * Math.cos(i)
+                ]);
+        radius += dr;
+    }
     return spiralOffsets;
 }
 
