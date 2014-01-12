@@ -23,14 +23,8 @@ describe("TagCloud", function() {
             toBeFilledOverPercent: function () {
                 return {
                      compare: function (actual, expected) {
-                            var ctx = actual;
-                            var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
-                            var pixCount = 0;
-                            for (var i = 0, n = pix.length; i < n; i += 4) {
-                                if (pix[i+3])
-                                    pixCount++;
-                            }
-                            var percent = pixCount * 100 / canvasWidth / canvasHeight;
+                            var tagCloud = actual;
+                            var percent = tagCloud.getCoverage();
                             return {
                                   pass: percent >= expected,
                                   message: 'The filled percentage ' + percent + ' is not over '+expected
@@ -48,7 +42,6 @@ describe("TagCloud", function() {
                      compare: function (actual, expected) {
                             var ctx = actual;
                             var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
-                            var pixCount = 0;
                             var pixOnBorder = false;
 
                             for (var i = 0; i < canvasWidth; i ++) {
@@ -74,6 +67,34 @@ describe("TagCloud", function() {
         });
     });
 
+    beforeEach(function () {
+        jasmine.addMatchers({
+            toHaveMoreThanOneColours: function () {
+                return {
+                     compare: function (actual, expected) {
+                            var ctx = actual;
+                            var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
+                            var colors = {};
+
+                            for (var i = 0; i < pix.length; i += 4) {
+                                if (pix[i + 3])
+                                    colors[pix[i] * 256 * 256 + pix[i+1] * 256 + pix[i+2]] = true;
+                            }
+
+                            var colorCount = 0, key;
+                            for (key in colors) {
+                                    colorCount++;
+                            }
+                            return {
+                                  pass: colorCount > 1,
+                                  message: "There are " + colorCount + " colors."
+                            };
+                    }
+                };
+            }
+        });
+    });
+
     afterEach(function() {
         var container = document.getElementById(rootId);
         container.parentNode.removeChild(container);
@@ -81,7 +102,7 @@ describe("TagCloud", function() {
 
     it("should take the whole place when only 1 tag", function() {
         tagCloud.render([['Only', 1]]);
-        expect(ctx).toBeFilledOverPercent(3);
+        expect(tagCloud).toBeFilledOverPercent(3);
     });
 
     it("should write the tag at a random place when only 1 tag", function() {
@@ -94,7 +115,7 @@ describe("TagCloud", function() {
     it("should find another location when the selected location doesn't fit in the canvas.", function() {
         spyOn(Math, 'random').and.returnValue(1);
         tagCloud.render([['Only', 1]]);
-        expect(ctx).toBeFilledOverPercent(3);
+        expect(tagCloud).toBeFilledOverPercent(3);
     });
 
     it("should not draw on painted area", function() {
@@ -119,6 +140,15 @@ describe("TagCloud", function() {
         tagCloud.render([['One', 1], ['Two', 1]]);
         expect(ctx.fillText).toHaveBeenCalledWith('One', jasmine.any(Number), jasmine.any(Number));
         expect(ctx.fillText).toHaveBeenCalledWith('Two', jasmine.any(Number), jasmine.any(Number));
+    });
+
+    it("should have more than 1 colour when more than 1 tag", function() {
+        var rand = 0.1;
+        spyOn(Math, "random").and.callFake(function() {
+            return rand += 0.1;
+        });
+        tagCloud.render([['One', 1], ['Two', 1]]);
+        expect(ctx).toHaveMoreThanOneColours();
     });
 });
 

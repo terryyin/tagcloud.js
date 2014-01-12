@@ -17,13 +17,13 @@ TagCloud.prototype._placeTag = function(tag) {
     while (!(placement = this._getNonOverlappingPlaceWithBestSize(fontSize, tag)))
         fontSize *= 0.9;
 
+    ctx.fillStyle = this._getRandomColor();
     ctx.fillText(tag, placement.x, placement.y);
 };
 
 TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function(fontSize, tag) {
-    ctx.font = "" + fontSize + "pt Arial";
-    ctx.fillStyle = "rgb(0,0,0)";
-    var lineHeight=ctx.measureText('M').width * 1.1;
+    ctx.font = "" + fontSize + "pt " + "Arial";
+    var lineHeight=ctx.measureText('M').width * 1.2;
     var matrics = ctx.measureText(tag);
 
     var base = new BasePlacement(
@@ -39,6 +39,11 @@ TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function(fontSize, tag)
     }
     return placement;
 };
+
+TagCloud.prototype._getRandomColor = function(){
+    colors = ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "yellow"];
+    return colors[Math.floor(colors.length * Math.random())];
+}
 
 TagCloud.prototype._isPlaceEmpty = function(placement, width, height) {
     if (placement.x < 0 || placement.y < 0 || placement.x + width > canvasWidth || placement.y + height > canvasHeight)
@@ -70,19 +75,26 @@ function BasePlacement(x, y, h) {
 }
 
 function generateSpiralOffsets() {
-    var spiralOffsets = [[0, 0]];
-    var radius = 0.8;
-    var dr = 0.5;
-    for (var i = 0; i < 15; i+=0.2) {
+    var spiralOffsets = [];
+    var radius = 0;
+    var dr = 0.2;
+    for (var i = 0; radius < 40; i+=0.8, radius += dr) {
         spiralOffsets.push([
                    radius * Math.sin(i),
                    radius * Math.cos(i)
                 ]);
-        radius += dr;
     }
     return spiralOffsets;
 }
 
 BasePlacement.prototype._spiralOffsets = generateSpiralOffsets();
 
-
+TagCloud.prototype.getCoverage = function() {
+    var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
+    var pixCount = 0;
+    for (var i = 0, n = pix.length; i < n; i += 4) {
+        if (pix[i+3])
+            pixCount++;
+    }
+    return percent = pixCount * 100 / canvasWidth / canvasHeight;
+};
