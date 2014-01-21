@@ -1,55 +1,59 @@
+
 function TagCloud(w, h, context) {
-    ctx = context;
-    canvasWidth = w;
-    canvasHeight = h;
-    fontSize = canvasHeight / 4;
+    "use strict";
+    this.ctx = context;
+    this.canvasWidth = w;
+    this.canvasHeight = h;
+    this.fontSize = this.canvasHeight / 4;
 }
 
-TagCloud.prototype.render = function(tags) {
-    ctx.textBaseline = "top";
-    for (tag in tags) {
-        this._placeTag(tags[tag][0]);
-    }
+TagCloud.prototype.render = function (tags) {
+    this.ctx.textBaseline = "top";
+    tags.forEach(function (tag) {
+        this.placeTag(tag[0]);
+    }, this);
 };
 
-TagCloud.prototype._placeTag = function(tag) {
+TagCloud.prototype.placeTag = function (tag) {
     var placement;
-    while (!(placement = this._getNonOverlappingPlaceWithBestSize(fontSize, tag)))
-        fontSize *= 0.9;
+    while (!(placement = this._getNonOverlappingPlaceWithBestSize(this.fontSize, tag)))
+        this.fontSize *= 0.9;
 
-    ctx.fillStyle = this._getRandomColor();
-    ctx.fillText(tag, placement.x, placement.y);
+    this.ctx.fillStyle = this._getRandomColor();
+    this.ctx.fillText(tag, placement.x, placement.y);
 };
 
-TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function(fontSize, tag) {
-    ctx.font = "" + fontSize + "pt " + "Arial";
-    var lineHeight=ctx.measureText('M').width * 1.2;
-    var matrics = ctx.measureText(tag);
+TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function (fontSize, tag) {
+    this.ctx.font = "" + fontSize + "pt " + "Arial";
+    var lineHeight=this.ctx.measureText('M').width * 1.2;
+    var matrics = this.ctx.measureText(tag);
 
     var base = new BasePlacement(
-        (canvasWidth - matrics.width) * Math.random(),
-        (canvasHeight - lineHeight) * Math.random(),
+        (this.canvasWidth - matrics.width) * Math.random(),
+        (this.canvasHeight - lineHeight) * Math.random(),
         lineHeight
         );
 
     var placement;
+    /* jshint ignore:start */
     while (placement = base.nextPlaceToTry()) {
         if (this._isPlaceEmpty(placement, matrics.width, lineHeight))
             break;
     }
+    /* jshint ignore:end */
     return placement;
 };
 
-TagCloud.prototype._getRandomColor = function(){
-    colors = ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "yellow"];
+TagCloud.prototype._getRandomColor = function (){
+    var colors = ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "yellow"];
     return colors[Math.floor(colors.length * Math.random())];
-}
+};
 
-TagCloud.prototype._isPlaceEmpty = function(placement, width, height) {
-    if (placement.x < 0 || placement.y < 0 || placement.x + width > canvasWidth || placement.y + height > canvasHeight)
+TagCloud.prototype._isPlaceEmpty = function (placement, width, height) {
+    if (placement.x < 0 || placement.y < 0 || placement.x + width > this.canvasWidth || placement.y + height > this.canvasHeight)
         return false;
 
-    var pix = ctx.getImageData(placement.x, placement.y, width, height).data;
+    var pix = this.ctx.getImageData(placement.x, placement.y, width, height).data;
 
     for (var i = 0, n = pix.length; i < n; i += 4) {
         if (pix[i+3]) {
@@ -89,12 +93,12 @@ function generateSpiralOffsets() {
 
 BasePlacement.prototype._spiralOffsets = generateSpiralOffsets();
 
-TagCloud.prototype.getCoverage = function() {
-    var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
+TagCloud.prototype.getCoverage = function () {
+    var pix = this.ctx.getImageData(0, 0, this.canvasWidth, this.canvasHeight).data;
     var pixCount = 0;
     for (var i = 0, n = pix.length; i < n; i += 4) {
         if (pix[i+3])
             pixCount++;
     }
-    return percent = pixCount * 100 / canvasWidth / canvasHeight;
+    return pixCount * 100 / this.canvasWidth / this.canvasHeight;
 };
