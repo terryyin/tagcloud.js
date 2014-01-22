@@ -24,12 +24,12 @@ TagCloud.prototype.placeTag = function (tag) {
 };
 
 TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function (fontSize, tag) {
+    var lineHeight=this.getLineHeight(fontSize);
     this.ctx.font = "" + fontSize + "pt " + "Arial";
-    var lineHeight=this.ctx.measureText('M').width * 1.2;
-    var matrics = this.ctx.measureText(tag);
+    var tagWidth = this.ctx.measureText(tag).width;
 
     var base = new BasePlacement(
-        (this.canvasWidth - matrics.width) * Math.random(),
+        (this.canvasWidth - tagWidth) * Math.random(),
         (this.canvasHeight - lineHeight) * Math.random(),
         lineHeight
         );
@@ -37,12 +37,16 @@ TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function (fontSize, tag
     var placement;
     /* jshint ignore:start */
     while (placement = base.nextPlaceToTry()) {
-        if (this._isPlaceEmpty(placement, matrics.width, lineHeight))
+        if (this._isPlaceEmpty(placement, tagWidth, lineHeight))
             break;
     }
     /* jshint ignore:end */
     return placement;
 };
+
+TagCloud.prototype.getLineHeight = function (fontSize) {
+    return this.ctx.measureText('M').width * 1.2;
+}
 
 TagCloud.prototype._getRandomColor = function (){
     var colors = ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "yellow"];
@@ -55,12 +59,20 @@ TagCloud.prototype._isPlaceEmpty = function (placement, width, height) {
 
     var pix = this.ctx.getImageData(placement.x, placement.y, width, height).data;
 
-    for (var i = 0, n = pix.length; i < n; i += 4) {
-        if (pix[i+3]) {
+    for (var i = 0, n = pix.length; i < n; i += 4)
+        if (pix[i+3])
                 return false;
-        }
-    }
     return true;
+};
+
+TagCloud.prototype.getCoverage = function () {
+    var pix = this.ctx.getImageData(0, 0, this.canvasWidth, this.canvasHeight).data;
+    var pixCount = 0;
+    for (var i = 0, n = pix.length; i < n; i += 4) {
+        if (pix[i+3])
+            pixCount++;
+    }
+    return pixCount * 100 / this.canvasWidth / this.canvasHeight;
 };
 
 function BasePlacement(x, y, h) {
@@ -93,12 +105,3 @@ function generateSpiralOffsets() {
 
 BasePlacement.prototype._spiralOffsets = generateSpiralOffsets();
 
-TagCloud.prototype.getCoverage = function () {
-    var pix = this.ctx.getImageData(0, 0, this.canvasWidth, this.canvasHeight).data;
-    var pixCount = 0;
-    for (var i = 0, n = pix.length; i < n; i += 4) {
-        if (pix[i+3])
-            pixCount++;
-    }
-    return pixCount * 100 / this.canvasWidth / this.canvasHeight;
-};

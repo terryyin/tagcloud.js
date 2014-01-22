@@ -20,7 +20,10 @@ beforeEach(function () {
         toHaveNoPixOnBorder: function () {
             return {
                     compare: function (actual, expected) {
-                        var ctx = actual;
+                        var container = actual;
+                        var ctx = container.getContext("2d");
+                        var canvasWidth = container.width;
+                        var canvasHeight = container.height;
                         var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
                         var pixOnBorder = false;
 
@@ -52,7 +55,10 @@ beforeEach(function () {
         toHaveMoreThanOneColours: function () {
             return {
                     compare: function (actual, expected) {
-                        var ctx = actual;
+                        var container = actual;
+                        var ctx = container.getContext("2d");
+                        var canvasWidth = container.width;
+                        var canvasHeight = container.height;
                         var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
                         var colors = {};
 
