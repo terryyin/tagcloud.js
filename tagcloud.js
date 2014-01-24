@@ -5,7 +5,12 @@ function TagCloud(w, h, context) {
     this.canvasWidth = w;
     this.canvasHeight = h;
     this.fontSize = this.canvasHeight / 4;
+    this.shape = "rectangle";
 }
+
+TagCloud.prototype.setShape = function () {
+    this.shape = "circle";
+};
 
 TagCloud.prototype.render = function (tags) {
     this.ctx.textBaseline = "top";
@@ -62,7 +67,16 @@ TagCloud.prototype._isPlaceEmpty = function (placement, width, height) {
     for (var i = 0, n = pix.length; i < n; i += 4)
         if (pix[i+3])
                 return false;
-    return true;
+
+    return [[placement.x, placement.y], 
+        [placement.x + width, placement.y + height]].every(
+                function(pos) {
+                    var a = this.canvasWidth / 2;
+                    var b = this.canvasHeight / 2;
+                    var X = pos[0] - a;
+                    var Y = pos[1] - b;
+                    return (X * X / a / a + Y * Y / b / b < 1);
+                }, this);
 };
 
 TagCloud.prototype.getCoverage = function () {

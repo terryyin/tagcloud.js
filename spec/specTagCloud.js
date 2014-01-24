@@ -68,5 +68,17 @@ describe("TagCloud", function() {
         tagCloud.render([['One', 1], ['Two', 1]]);
         expect(container).toHaveMoreThanOneColours();
     });
+
+    it("should only paint within the given circle shape", function () {
+        tagCloud.setShape("circle");
+        tagCloud.render([['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1]]);
+        expect(container).toHaveAllPixesThat(function(x, y) {
+            var a = canvasWidth / 2;
+            var b = canvasHeight / 2;
+            var X = x - a;
+            var Y = y - b;
+            return (X * X / a / a + Y * Y / b / b < 1);
+        });
+    });
 });
 
