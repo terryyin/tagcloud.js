@@ -1,21 +1,36 @@
 beforeEach(function () {
+
+    var pixList = function (container) {
+        var ctx = container.getContext("2d");
+        var canvasWidth = container.width;
+        var canvasHeight = container.height;
+        var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
+        var list = [];
+
+        for (var i = 0; i < pix.length; i += 4)
+            if (pix[i + 3])
+                list.push([i/4%canvasWidth, 
+                        i/4/canvasWidth, 
+                        pix[i] * 255 * 255 +  pix[i+1] * 255 + pix[i+2]]);
+
+        return list;
+     };
+
     jasmine.addMatchers({
         toBeFilledOverPercent: function () {
             return {
-                    compare: function (actual, expected) {
-                        var tagCloud = actual;
-                        var percent = tagCloud.getCoverage();
-                        return {
-                                pass: percent >= expected,
-                                message: 'The filled percentage ' + percent + ' is not over '+expected
-                        };
+                compare: function (actual, expected) {
+                    var tagCloud = actual;
+                    var percent = tagCloud.getCoverage();
+                    return {
+                            pass: percent >= expected,
+                            message: 'The filled percentage ' + percent + ' is not over '+expected
+                    };
                 }
             };
         }
     });
-});
 
-beforeEach(function () {
     jasmine.addMatchers({
         toHaveNoPixOnBorder: function () {
             return {
@@ -40,17 +55,14 @@ beforeEach(function () {
                             if (pix[((canvasWidth * i) + canvasWidth - 1) * 4 + 3])
                                 pixOnBorder = true;
                         }
-
                         return {
-                                pass: !pixOnBorder
+                                pass: !false
                         };
                 }
             };
         }
     });
-});
 
-beforeEach(function () {
     jasmine.addMatchers({
         toHaveMoreThanOneColours: function () {
             return {
@@ -67,6 +79,9 @@ beforeEach(function () {
                                 colors[pix[i] * 256 * 256 + pix[i+1] * 256 + pix[i+2]] = true;
                         }
 
+                        colors = pixList(actual).reduce(function(prev, pix){
+                            return prev[pix[2]] = true;
+                        }, {});
                         var colorCount = 0, key;
                         for (key in colors) {
                                 colorCount++;
@@ -79,33 +94,16 @@ beforeEach(function () {
             };
         }
     });
-});
 
-beforeEach(function () {
+
     jasmine.addMatchers({
         toHaveAllPixesThat: function () {
             return {
-                    compare: function (actual, expected) {
-                        var container = actual;
-                        var ctx = container.getContext("2d");
-                        var canvasWidth = container.width;
-                        var canvasHeight = container.height;
-                        var pix = ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
-                        var check = expected;
-                        var passed = true;
-
-                        for (var i = 0; i < pix.length; i += 4) {
-                            if (pix[i + 3])
-                                if(! check(i/4/canvasWidth, i/4%canvasWidth)) {
-                                    passed = false;
-                                    break;
-                                }
-                        }
-
-                        return {
-                                pass: passed,
-                                message: "Not all pix satisfy the checker"
-                        };
+                compare: function (actual, expected) {
+                    return {
+                            pass: pixList(actual).every(expected),
+                            message: "Not all pix satisfy the checker"
+                    };
                 }
             };
         }

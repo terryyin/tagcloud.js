@@ -29,8 +29,8 @@ TagCloud.prototype.placeTag = function (tag) {
 };
 
 TagCloud.prototype._getNonOverlappingPlaceWithBestSize = function (fontSize, tag) {
-    var lineHeight=this.getLineHeight(fontSize);
     this.ctx.font = "" + fontSize + "pt " + "Arial";
+    var lineHeight=this.getLineHeight(fontSize);
     var tagWidth = this.ctx.measureText(tag).width;
 
     var base = new BasePlacement(
@@ -69,7 +69,9 @@ TagCloud.prototype._isPlaceEmpty = function (placement, width, height) {
                 return false;
 
     return [[placement.x, placement.y], 
-        [placement.x + width, placement.y + height]].every(
+            [placement.x + width, placement.y], 
+            [placement.x, placement.y + height], 
+            [placement.x + width, placement.y + height]].every(
                 function(pos) {
                     var a = this.canvasWidth / 2;
                     var b = this.canvasHeight / 2;

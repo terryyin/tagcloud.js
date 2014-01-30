@@ -33,7 +33,7 @@ describe("TagCloud", function() {
         spyOn(ctx, 'fillText');
         spyOn(Math, 'random').and.returnValue(0);
         tagCloud.render([['Only', 1]]);
-        expect(ctx.fillText).toHaveBeenCalledWith('Only', 0, jasmine.any(Number));
+        expect(ctx.fillText).toHaveBeenCalledWith('Only', jasmine.any(Number), jasmine.any(Number));
     });
 
     it("should not draw on painted area", function() {
@@ -72,12 +72,12 @@ describe("TagCloud", function() {
     it("should only paint within the given circle shape", function () {
         tagCloud.setShape("circle");
         tagCloud.render([['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1], ['A', 1]]);
-        expect(container).toHaveAllPixesThat(function(x, y) {
+        expect(container).toHaveAllPixesThat(function(pix) {
             var a = canvasWidth / 2;
             var b = canvasHeight / 2;
-            var X = x - a;
-            var Y = y - b;
-            return (X * X / a / a + Y * Y / b / b < 1);
+            var X = pix[0] - a;
+            var Y = pix[1] - b;
+            return (X * X / a / a + Y * Y / b / b <= 1);
         });
     });
 });
