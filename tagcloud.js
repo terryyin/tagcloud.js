@@ -4,7 +4,7 @@ function TagCloud(w, h, context) {
     this.ctx = context;
     this.canvasWidth = w;
     this.canvasHeight = h;
-    this.fontSize = this.canvasHeight / 4;
+    this.fontSize = this.canvasHeight / 3;
     this.shape = "rectangle";
 }
 
@@ -54,7 +54,7 @@ TagCloud.prototype.getLineHeight = function (fontSize) {
 }
 
 TagCloud.prototype._getRandomColor = function (){
-    var colors = ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "yellow"];
+    var colors = ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal"];
     return colors[Math.floor(colors.length * Math.random())];
 };
 
@@ -110,7 +110,7 @@ function generateSpiralOffsets() {
     var spiralOffsets = [];
     var radius = 0;
     var dr = 0.2;
-    for (var i = 0; radius < 40; i+=0.8, radius += dr) {
+    for (var i = 0; radius < 40; i+=0.4, radius += dr) {
         spiralOffsets.push([
                    radius * Math.sin(i),
                    radius * Math.cos(i)
